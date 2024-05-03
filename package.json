@@ -1,0 +1,23 @@
+{
+  "name": "tomedo-actionurl",
+  "version": "1.0.0",
+  "description": "REST-API to receive action url calls from any pbx and forward it to any number of Tomedo clients",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexander Harm - ApfelQ",
+  "license": "ISC",
+  "dependencies": {
+    "ajv": "^8.13.0",
+    "es6-promise": "^4.2.8",
+    "express": "^4.19.2",
+    "got": "^14.2.1",
+    "graceful-fs": "^4.2.11"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.8",
+    "typescript": "^5.4.5"
+  },
+  "type": "module"
+}

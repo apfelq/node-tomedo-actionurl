@@ -1,0 +1,41 @@
+{
+    "type": "object",
+    "properties": {
+        "logDir": { "type": "string" },
+        "port":  { "type": "number" },
+        "setup": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "description": { "type": "string" },
+                    "pbxType": { 
+                        "type": "string",
+                        "enum": ["auerswald", "yealink", "generic"]
+                    },
+                    "pbxRegex": { "type": "string" },
+                    "requestUri": { "type": "string" },
+                    "sipAccount": { "type": "string" },
+                    "tomedoClients": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "ip": { "type": "string" },
+                                "port": { "type": "number" }
+                            },
+                            "additionalProperties": false,
+                            "required": ["ip", "port"]
+                        },
+                        "minItems": 1
+                    }
+                },
+                "additionalProperties": false,
+                "required": ["pbxType", "requestUri", "tomedoClients"]
+            },
+            "minItems": 1
+        }
+    },
+    "additionalProperties": false,
+    "required": ["port", "setup"]
+}
