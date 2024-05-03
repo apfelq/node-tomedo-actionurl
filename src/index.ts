@@ -33,7 +33,7 @@ interface setupInterface
     pbxType: string
     pbxRegex?: string
     requestUri: string
-    sipAccount?: string
+    sipUsername?: string
     tomedoClients: [{
         ip: string
         port: number
@@ -135,6 +135,7 @@ async function processAuerswald (setup: setupInterface, request: string, query: 
 // process Yealink request
 interface yealinkQueryInterface
 {
+    active_user: string
     call_id: string
     event: string
 }
@@ -144,7 +145,7 @@ async function processYealink (setup: setupInterface, request: string, query: ye
 
     for (let client of setup.tomedoClients)
     {
-        if (setup.requestUri === request && setup.pbxType === 'yealink')
+        if (setup.requestUri === request && setup.pbxType === 'yealink' && setup.sipUsername === query.active_user)
         {
             requests.push(got(`http://${client.ip}:${client.port}/${query.event}/${query.call_id}`))
         }

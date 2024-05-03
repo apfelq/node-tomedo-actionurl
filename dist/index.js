@@ -68,7 +68,7 @@ async function processAuerswald(setup, request, query) {
 async function processYealink(setup, request, query) {
     let requests = [];
     for (let client of setup.tomedoClients) {
-        if (setup.requestUri === request && setup.pbxType === 'yealink') {
+        if (setup.requestUri === request && setup.pbxType === 'yealink' && setup.sipUsername === query.active_user) {
             requests.push(got(`http://${client.ip}:${client.port}/${query.event}/${query.call_id}`));
         }
     }

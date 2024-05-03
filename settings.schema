@@ -15,7 +15,7 @@
                     },
                     "pbxRegex": { "type": "string" },
                     "requestUri": { "type": "string" },
-                    "sipAccount": { "type": "string" },
+                    "sipUsername": { "type": "string" },
                     "tomedoClients": {
                         "type": "array",
                         "items": {
