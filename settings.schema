@@ -2,8 +2,9 @@
     "type": "object",
     "properties": {
         "logDir": { "type": "string" },
+        "debug": { "type": "boolean" },
         "port":  { "type": "number" },
-        "setup": {
+        "devices": {
             "type": "array",
             "items": {
                 "type": "object",
@@ -13,29 +14,41 @@
                         "type": "string",
                         "enum": ["auerswald", "yealink", "generic"]
                     },
-                    "pbxRegex": { "type": "string" },
                     "requestUri": { "type": "string" },
-                    "sipUsername": { "type": "string" },
-                    "tomedoClients": {
+                    "accounts": {
                         "type": "array",
                         "items": {
                             "type": "object",
                             "properties": {
-                                "ip": { "type": "string" },
-                                "port": { "type": "number" }
+                                "description": { "type": "string" },
+                                "sipUsername": { "type": "string" },
+                                "tomedoClients": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "ip": { "type": "string" },
+                                            "port": { "type": "number" }
+                                        },
+                                        "additionalProperties": false,
+                                        "required": ["ip", "port"]
+                                    },
+                                    "minItems": 1
+                                }
                             },
                             "additionalProperties": false,
-                            "required": ["ip", "port"]
+                            "required": ["sipUsername", "tomedoClients"]
                         },
                         "minItems": 1
                     }
                 },
                 "additionalProperties": false,
-                "required": ["pbxType", "requestUri", "tomedoClients"]
+                "required": ["pbxType", "requestUri", "accounts"]
             },
-            "minItems": 1
+            minItems: 1
         }
     },
     "additionalProperties": false,
-    "required": ["port", "setup"]
+    "required": ["devices", "port"]
 }
+        

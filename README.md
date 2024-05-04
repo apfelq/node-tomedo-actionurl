@@ -1,3 +1,7 @@
+# A small tool to signal calls via Action URLs to multiple Tomedo clients
+
+The intention mainly facilitates the signalisation of calls to Tomedo clients if you use DECT phones or multiple SIP accounts or if you want to signal calls on several Tomedo clients.
+
 ### Yealink
 
 According to the official documentation both desk- and DECT-phones are capable of Action-URL. We can use the following 3 triggers in Tomedo:

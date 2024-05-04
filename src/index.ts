@@ -27,12 +27,9 @@ catch (e)
 }
 
 // load settings
-interface setupInterface
+interface accountInterface
 {
     description?: string
-    pbxType: string
-    pbxRegex?: string
-    requestUri: string
     sipUsername?: string
     tomedoClients: [{
         ip: string
@@ -40,11 +37,20 @@ interface setupInterface
     }]
 }
 
+interface deviceInterface
+{
+    description?: string
+    pbxType: string
+    requestUri: string
+    accounts: accountInterface[]
+}
+
 interface settingsInterface
 {
+    debug?: boolean
     logDir?: string
     port: number
-    setup: setupInterface[]
+    devices: deviceInterface[]
 }
 let settings: settingsInterface
 
@@ -73,37 +79,33 @@ console.log(`settings: valid`)
 const app = express()
 
 // define apis
-for (let setup of settings.setup)
+for (let device of settings.devices)
 {
 
-    if (setup.requestUri.substring(0, 1) !== '/') setup.requestUri = `/${setup.requestUri}`
+    if (device.requestUri.substring(0, 1) !== '/') device.requestUri = `/${device.requestUri}`
 
-    app.get(setup.requestUri, async (req, res, next) => {
+    app.get(device.requestUri, async (req, res, next) => {
 
-        try
-        {
-            // process received http request
-            const request = req.originalUrl.slice(0, setup.requestUri.length)
-            const query = req.query
+        // process received http request
+        const request = req.originalUrl.slice(0, device.requestUri.length)
+        const query = req.query
             
-            // only do something if request matches requestUri
-            if (setup.requestUri === request)
+        // only do something if request matches requestUri
+        if (device.requestUri === request)
+        {
+            for (let account of device.accounts)
             {
                 // Auerswald
-                await processAuerswald(setup, request, query)
+                if (device.pbxType === 'auerswald') await processAuerswald(account, request, query)
 
                 // Yealink
-                await processYealink(setup, request, query)
+                if (device.pbxType === 'yealink') await processYealink(account, request, query)
             }
+        }
 
-            // close connection
-            res.sendStatus(200)
-        }
-        catch (e)
-        {
-            console.log(e.message)
-            return next(e)
-        }
+        // close connection
+        res.sendStatus(200)
+
     })
 
 }
@@ -117,16 +119,13 @@ interface auerswaldQueryInterface
     number: string
     event: string
 }
-async function processAuerswald (setup: setupInterface, request: string, query: auerswaldQueryInterface): Promise<any>
+async function processAuerswald (account: accountInterface, request: string, query: auerswaldQueryInterface): Promise<any>
 {
     let requests = []
 
-    for (let client of setup.tomedoClients)
+    for (let client of account.tomedoClients)
     {
-        if (setup.requestUri === request && setup.pbxType === 'auerswald')
-        {
-            requests.push(got(`http://${client.ip}:${client.port}/${query.event}/${query.number}`))
-        }
+        requests.push(got(`http://${client.ip}:${client.port}/${query.event}/${query.number}`))
     }
 
     return Promise.all(requests)
@@ -139,16 +138,13 @@ interface yealinkQueryInterface
     call_id: string
     event: string
 }
-async function processYealink (setup: setupInterface, request: string, query: yealinkQueryInterface): Promise<any>
+async function processYealink (account: accountInterface, request: string, query: yealinkQueryInterface): Promise<any>
 {
     let requests = []
 
-    for (let client of setup.tomedoClients)
+    for (let client of account.tomedoClients)
     {
-        if (setup.requestUri === request && setup.pbxType === 'yealink' && setup.sipUsername === query.active_user)
-        {
-            requests.push(got(`http://${client.ip}:${client.port}/${query.event}/${query.call_id}`))
-        }
+        if (account.sipUsername === query.active_user) requests.push(got(`http://${client.ip}:${client.port}/${query.event}/${query.call_id}`))
     }
 
     return Promise.all(requests)
