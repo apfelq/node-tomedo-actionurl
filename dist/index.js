@@ -45,10 +45,16 @@ for (let device of settings.devices) {
         const query = req.query;
         if (device.requestUri === request) {
             for (let account of device.accounts) {
-                if (device.pbxType === 'auerswald')
-                    await processAuerswald(account, request, query);
-                if (device.pbxType === 'yealink')
-                    await processYealink(account, request, query);
+                try {
+                    if (device.pbxType === 'auerswald')
+                        await processAuerswald(account, request, query);
+                    if (device.pbxType === 'yealink')
+                        await processYealink(account, request, query);
+                }
+                catch (e) {
+                    if (settings.debug)
+                        console.log(`${(new Date()).toISOString()} debug: ${e.message}`);
+                }
             }
         }
         res.sendStatus(200);

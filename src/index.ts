@@ -98,11 +98,19 @@ for (let device of settings.devices)
         {
             for (let account of device.accounts)
             {
-                // Auerswald
-                if (device.pbxType === 'auerswald') await processAuerswald(account, request, query)
+                try
+                {
+                    // Auerswald
+                    if (device.pbxType === 'auerswald') await processAuerswald(account, request, query)
 
-                // Yealink
-                if (device.pbxType === 'yealink') await processYealink(account, request, query)
+                    // Yealink
+                    if (device.pbxType === 'yealink') await processYealink(account, request, query)
+                }
+                catch (e)
+                {
+                    if (settings.debug) console.log(`${(new Date()).toISOString()} debug: ${e.message}`)
+                }
+
             }
         }
 
