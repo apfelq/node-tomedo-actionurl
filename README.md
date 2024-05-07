@@ -15,7 +15,7 @@ call_terminated
 For each of this triggers you can pass specific parameters. In order to deal with desk- and DECT-phones alike you need to setup the Action-URL like this
 
 ```
-http(s)://<ipaddressofthisapp>:<portofthisapp>/<requestUri>?event=<incoming|connected|hangup>&active_user=$active_user&call_id=$call_id
+http(s)://<ipaddressofthisapp>:<portofthisapp>/<requestUri>?event=<incoming|connected|hangup>&active_user=$active_user&callerID=$callerID
 ```
 
 #### Example (simple, one device)
@@ -23,9 +23,10 @@ http(s)://<ipaddressofthisapp>:<portofthisapp>/<requestUri>?event=<incoming|conn
 Yealink:
 
 ```
-action_url.incoming_call=http://192.168.1.10:9090/?event=incoming&active_user=$active_user&call_id=$call_id
-action_url.call_established=http://192.168.1.10:9090/?event=connected&active_user=$active_user&call_id=$call_id
-action_url.call_terminated=http://192.168.1.10:9090/?event=hangup&active_user=$active_user&call_id=$call_id
+action_url.incoming_call=http://192.168.1.10:9090/?event=incoming&active_user=$active_user&callerID=$callerID
+action_url.call_established=http://192.168.1.10:9090/?event=connected&active_user=$active_user&callerID=$callerID
+action_url.call_terminated=http://192.168.1.10:9090/?event=hangup&active_user=$active_user&callerID=$callerID
+action_url.call_remote_canceled=http://192.168.1.10:9090/?event=hangup&active_user=$active_user&callerID=$callerID
 ```
 
 App:
@@ -52,14 +53,14 @@ Yealink:
 
 ```
 Device A:
-action_url.incoming_call=http://192.168.1.10:9090/devicea?event=incoming&active_user=$active_user&call_id=$call_id
-action_url.call_established=http://192.168.1.10:9090/devicea?event=connected&active_user=$active_user&call_id=$call_id
-action_url.call_terminated=http://192.168.1.10:9090/devicea?event=hangup&active_user=$active_user&call_id=$call_id
+action_url.incoming_call=http://192.168.1.10:9090/devicea?event=incoming&active_user=$active_user&callerID=$callerID
+action_url.call_established=http://192.168.1.10:9090/devicea?event=connected&active_user=$active_user&callerID=$callerID
+action_url.call_terminated=http://192.168.1.10:9090/devicea?event=hangup&active_user=$active_user&callerID=$callerID
 
 Device B:
-action_url.incoming_call=http://192.168.1.10:9090/deviceb?event=incoming&active_user=$active_user&call_id=$call_id
-action_url.call_established=http://192.168.1.10:9090/deviceb?event=connected&active_user=$active_user&call_id=$call_id
-action_url.call_terminated=http://192.168.1.10:9090/deviceb?event=hangup&active_user=$active_user&call_id=$call_id
+action_url.incoming_call=http://192.168.1.10:9090/deviceb?event=incoming&active_user=$active_user&callerID=$callerID
+action_url.call_established=http://192.168.1.10:9090/deviceb?event=connected&active_user=$active_user&callerID=$callerID
+action_url.call_terminated=http://192.168.1.10:9090/deviceb?event=hangup&active_user=$active_user&callerID=$callerID
 ```
 
 App:

@@ -151,7 +151,7 @@ async function processAuerswald (account: accountInterface, request: string, que
 interface yealinkQueryInterface
 {
     active_user: string
-    call_id: string
+    callerID: string
     event: string
 }
 async function processYealink (account: accountInterface, request: string, query: yealinkQueryInterface): Promise<any>
@@ -160,7 +160,7 @@ async function processYealink (account: accountInterface, request: string, query
 
     for (let client of account.tomedoClients)
     {
-        const url = `http://${client.ip}:${client.port}/${query.event}/${query.call_id}`
+        const url = `http://${client.ip}:${client.port}/${query.event}/${query.callerID}`
 
         // debugging
         if (settings.debug) console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`)

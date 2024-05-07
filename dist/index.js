@@ -75,7 +75,7 @@ async function processAuerswald(account, request, query) {
 async function processYealink(account, request, query) {
     let requests = [];
     for (let client of account.tomedoClients) {
-        const url = `http://${client.ip}:${client.port}/${query.event}/${query.call_id}`;
+        const url = `http://${client.ip}:${client.port}/${query.event}/${query.callerID}`;
         if (settings.debug)
             console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`);
         if (account.sipUsername === query.active_user)
