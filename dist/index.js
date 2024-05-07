@@ -39,6 +39,8 @@ for (let device of settings.devices) {
     if (device.requestUri.substring(0, 1) !== '/')
         device.requestUri = `/${device.requestUri}`;
     app.get(device.requestUri, async (req, res, next) => {
+        if (settings.debug)
+            console.log(`${(new Date()).toISOString()} debug: incoming request ${req.originalUrl} from ${req.ip}`);
         const request = req.originalUrl.slice(0, device.requestUri.length);
         const query = req.query;
         if (device.requestUri === request) {
@@ -57,15 +59,21 @@ console.log(`app: listening for incoming requests (port ${settings.port})`);
 async function processAuerswald(account, request, query) {
     let requests = [];
     for (let client of account.tomedoClients) {
-        requests.push(got(`http://${client.ip}:${client.port}/${query.event}/${query.number}`));
+        const url = `http://${client.ip}:${client.port}/${query.event}/${query.number}`;
+        if (settings.debug)
+            console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`);
+        requests.push(got(url));
     }
     return Promise.all(requests);
 }
 async function processYealink(account, request, query) {
     let requests = [];
     for (let client of account.tomedoClients) {
+        const url = `http://${client.ip}:${client.port}/${query.event}/${query.call_id}`;
+        if (settings.debug)
+            console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`);
         if (account.sipUsername === query.active_user)
-            requests.push(got(`http://${client.ip}:${client.port}/${query.event}/${query.call_id}`));
+            requests.push(got(url));
     }
     return Promise.all(requests);
 }
