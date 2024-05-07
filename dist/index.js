@@ -48,6 +48,8 @@ for (let device of settings.devices) {
                 try {
                     if (device.pbxType === 'auerswald')
                         await processAuerswald(account, request, query);
+                    if (device.pbxType === 'snom')
+                        await processSnom(account, request, query);
                     if (device.pbxType === 'yealink')
                         await processYealink(account, request, query);
                 }
@@ -69,6 +71,17 @@ async function processAuerswald(account, request, query) {
         if (settings.debug)
             console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`);
         requests.push(got(url));
+    }
+    return Promise.all(requests);
+}
+async function snomYealink(account, request, query) {
+    let requests = [];
+    for (let client of account.tomedoClients) {
+        const url = `http://${client.ip}:${client.port}/${query.event}/${query.remote}`;
+        if (settings.debug)
+            console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`);
+        if (account.sipUsername === query.active_user)
+            requests.push(got(url));
     }
     return Promise.all(requests);
 }

@@ -12,7 +12,7 @@
                     "description": { "type": "string" },
                     "pbxType": { 
                         "type": "string",
-                        "enum": ["auerswald", "yealink", "generic"]
+                        "enum": ["auerswald", "snom", "yealink", "generic"]
                     },
                     "requestUri": { "type": "string" },
                     "accounts": {

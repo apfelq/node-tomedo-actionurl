@@ -103,6 +103,9 @@ for (let device of settings.devices)
                     // Auerswald
                     if (device.pbxType === 'auerswald') await processAuerswald(account, request, query)
 
+                    // snom
+                    if (device.pbxType === 'snom') await processSnom(account, request, query)
+
                     // Yealink
                     if (device.pbxType === 'yealink') await processYealink(account, request, query)
                 }
@@ -142,6 +145,30 @@ async function processAuerswald (account: accountInterface, request: string, que
         if (settings.debug) console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`)
 
         requests.push(got(url))
+    }
+
+    return Promise.all(requests)
+}
+
+// process snom request
+interface snomQueryInterface
+{
+    active_user: string
+    remote: string
+    event: string
+}
+async function snomYealink (account: accountInterface, request: string, query: snomQueryInterface): Promise<any>
+{
+    let requests = []
+
+    for (let client of account.tomedoClients)
+    {
+        const url = `http://${client.ip}:${client.port}/${query.event}/${query.remote}`
+
+        // debugging
+        if (settings.debug) console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`)
+
+        if (account.sipUsername === query.active_user) requests.push(got(url))
     }
 
     return Promise.all(requests)
