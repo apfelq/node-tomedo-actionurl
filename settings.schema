@@ -45,7 +45,7 @@
                 "additionalProperties": false,
                 "required": ["pbxType", "requestUri", "accounts"]
             },
-            minItems: 1
+            "minItems": 1
         }
     },
     "additionalProperties": false,
