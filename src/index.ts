@@ -157,7 +157,7 @@ interface snomQueryInterface
     remote: string
     event: string
 }
-async function snomYealink (account: accountInterface, request: string, query: snomQueryInterface): Promise<any>
+async function processSnom (account: accountInterface, request: string, query: snomQueryInterface): Promise<any>
 {
     let requests = []
 
@@ -192,6 +192,7 @@ async function processYealink (account: accountInterface, request: string, query
         // debugging
         if (settings.debug) console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`)
 
+        if (query.callerID === 'Anonymous') continue
         if (account.sipUsername === query.active_user) requests.push(got(url))
     }
 

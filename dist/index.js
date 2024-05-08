@@ -74,7 +74,7 @@ async function processAuerswald(account, request, query) {
     }
     return Promise.all(requests);
 }
-async function snomYealink(account, request, query) {
+async function processSnom(account, request, query) {
     let requests = [];
     for (let client of account.tomedoClients) {
         const url = `http://${client.ip}:${client.port}/${query.event}/${query.remote}`;
@@ -91,6 +91,8 @@ async function processYealink(account, request, query) {
         const url = `http://${client.ip}:${client.port}/${query.event}/${query.callerID}`;
         if (settings.debug)
             console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`);
+        if (query.callerID === 'Anonymous')
+            continue;
         if (account.sipUsername === query.active_user)
             requests.push(got(url));
     }
