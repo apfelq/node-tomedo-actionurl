@@ -1,6 +1,6 @@
 {
   "name": "tomedo-actionurl",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "REST-API to receive action url calls from any pbx and forward it to any number of Tomedo clients",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "ajv": "^8.17.1",
+    "awesome-phonenumber": "^7.2.0",
     "es6-promise": "^4.2.8",
     "express": "^4.21.1",
     "got": "^14.4.4",

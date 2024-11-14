@@ -4,6 +4,7 @@
         "logDir": { "type": "string" },
         "debug": { "type": "boolean" },
         "port":  { "type": "number" },
+        "regionCode": { "type": "string" },
         "devices": {
             "type": "array",
             "items": {
@@ -49,6 +50,6 @@
         }
     },
     "additionalProperties": false,
-    "required": ["devices", "port"]
+    "required": ["devices", "port", "regionCode"]
 }
         

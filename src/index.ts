@@ -4,7 +4,9 @@ import fs from 'graceful-fs'
 import got from 'got'
 import path from 'path'
 import process from 'process'
+import qs from 'qs'
 import { promisify } from 'util'
+import { findNumbers } from 'awesome-phonenumber'
 
 const __dirname = process.cwd()
 const fsAccess = promisify(fs.access)
@@ -12,8 +14,6 @@ const fsAppendFile = promisify(fs.appendFile)
 const fsMkdir = promisify(fs.mkdir)
 const fsReadFile = promisify(fs.readFile)
 const fsWriteFile = promisify(fs.writeFile)
-
-const reCallerId = /(anonymous|[+]?[0-9]{4,})/;
 
 // load settings schema
 let settingsSchema
@@ -52,6 +52,7 @@ interface settingsInterface
     debug?: boolean
     logDir?: string
     port: number
+    regionCode: string
     devices: deviceInterface[]
 }
 let settings: settingsInterface
@@ -79,6 +80,12 @@ console.log(`settings: valid`)
 / setup app
 */
 const app = express()
+
+// normally query parser strips '+' from query https://github.com/ljharb/qs/blob/037f3686e8f8eee456cf958c39ffd8a967d4ead5/lib/utils.js#L112
+// found here https://github.com/expressjs/express/issues/3453
+app.set('query parser', function (str) {
+    return qs.parse(str, { decoder: function (s) { return decodeURIComponent(s) } });
+});
 
 // define apis
 for (let device of settings.devices)
@@ -190,10 +197,11 @@ async function processYealink (account: accountInterface, request: string, query
 
     for (let client of account.tomedoClients)
     {
-        const callerID = query.callerID.toLowerCase().match(reCallerId)
-        if (settings.debug && callerID) console.log(`${(new Date()).toISOString()} debug: matched callerID ${callerID[1]}`)
+        const callerID = findNumbers(query.callerID, {defaultRegionCode: settings.regionCode})
 
-        if (!callerID || callerID[1] === 'anonymous')
+        if (settings.debug) console.log(`${(new Date()).toISOString()} debug: matched callerID ${JSON.stringify(callerID[0]) || 'none'}`)
+
+        if (callerID.length = 0)
         {
             // debugging
             if (settings.debug) console.log(`${(new Date()).toISOString()} debug: caller is anonymous or unknown`)
@@ -201,7 +209,7 @@ async function processYealink (account: accountInterface, request: string, query
         }
         if (account.sipUsername === query.active_user) 
         {
-            const url = `http://${client.ip}:${client.port}/${query.event}/${callerID[1]}`
+            const url = `http://${client.ip}:${client.port}/${query.event}/${callerID[0].phoneNumber.number.e164}`
             // debugging
             if (settings.debug) console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`)
             requests.push(got(url))

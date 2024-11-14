@@ -3,14 +3,15 @@ import express from 'express';
 import fs from 'graceful-fs';
 import got from 'got';
 import process from 'process';
+import qs from 'qs';
 import { promisify } from 'util';
+import { findNumbers } from 'awesome-phonenumber';
 const __dirname = process.cwd();
 const fsAccess = promisify(fs.access);
 const fsAppendFile = promisify(fs.appendFile);
 const fsMkdir = promisify(fs.mkdir);
 const fsReadFile = promisify(fs.readFile);
 const fsWriteFile = promisify(fs.writeFile);
-const reCallerId = /(anonymous|[+]?[0-9]{4,})/;
 let settingsSchema;
 try {
     settingsSchema = JSON.parse(await fsReadFile(__dirname + '/settings.schema', { encoding: 'utf8' }));
@@ -36,6 +37,9 @@ if (!validate(settings)) {
 }
 console.log(`settings: valid`);
 const app = express();
+app.set('query parser', function (str) {
+    return qs.parse(str, { decoder: function (s) { return decodeURIComponent(s); } });
+});
 for (let device of settings.devices) {
     if (device.requestUri.substring(0, 1) !== '/')
         device.requestUri = `/${device.requestUri}`;
@@ -91,16 +95,16 @@ async function processSnom(account, request, query) {
 async function processYealink(account, request, query) {
     let requests = [];
     for (let client of account.tomedoClients) {
-        const callerID = query.callerID.toLowerCase().match(reCallerId);
-        if (settings.debug && callerID)
-            console.log(`${(new Date()).toISOString()} debug: matched callerID ${callerID[1]}`);
-        if (!callerID || callerID[1] === 'anonymous') {
+        const callerID = findNumbers(query.callerID, { defaultRegionCode: settings.regionCode });
+        if (settings.debug)
+            console.log(`${(new Date()).toISOString()} debug: matched callerID ${JSON.stringify(callerID[0]) || 'none'}`);
+        if (callerID.length = 0) {
             if (settings.debug)
                 console.log(`${(new Date()).toISOString()} debug: caller is anonymous or unknown`);
             continue;
         }
         if (account.sipUsername === query.active_user) {
-            const url = `http://${client.ip}:${client.port}/${query.event}/${callerID[1]}`;
+            const url = `http://${client.ip}:${client.port}/${query.event}/${callerID[0].phoneNumber.number.e164}`;
             if (settings.debug)
                 console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`);
             requests.push(got(url));

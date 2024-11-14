@@ -42,7 +42,8 @@ App:
         }
     ],
     "pbxType": "snom",
-    "port": 9090
+    "port": 9090,
+    "regionalCode": "DE"
 }
 ```
 
@@ -84,7 +85,8 @@ App:
         }
     ],
     "pbxType": "snom",
-    "port": 9090
+    "port": 9090,
+    "regionalCode": "DE"
 }
 ```
 
@@ -130,7 +132,8 @@ App:
         }
     ],
     "pbxType": "yealink",
-    "port": 9090
+    "port": 9090,
+    "regionalCode": "DE"
 }
 ```
 
@@ -174,7 +177,8 @@ App:
         }
     ],
     "pbxType": "yealink",
-    "port": 9090
+    "port": 9090,
+    "regionalCode": "DE"
 }
 ```
 
