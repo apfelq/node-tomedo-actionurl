@@ -177,3 +177,17 @@ App:
     "port": 9090
 }
 ```
+
+### macOS: launchd-job
+
+Copy `com.apfelq.node-tomedo-actionurl.plist` to `/Library/LaunchDaemons` and adjust username and paths to your environment. Then load the job with
+
+```
+sudo launchctl bootstrap system/ /Library/LaunchDaemons/com.apfelq.node-tomedo-actionurl.plist
+```
+
+Confirm any macOS security exceptions. The job should start automatically. If not run
+
+```
+sudo launchctl kickstart system/ com.apfelq.node-tomedo-actionurl
+```

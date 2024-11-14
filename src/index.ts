@@ -13,7 +13,7 @@ const fsMkdir = promisify(fs.mkdir)
 const fsReadFile = promisify(fs.readFile)
 const fsWriteFile = promisify(fs.writeFile)
 
-const reCallerId = /[+0-9]{4,}/;
+const reCallerId = /(anonymous|[+]?[0-9]{4,})/;
 
 // load settings schema
 let settingsSchema
@@ -90,6 +90,7 @@ for (let device of settings.devices)
 
         // debugging
         if (settings.debug) console.log(`${(new Date()).toISOString()} debug: incoming request ${req.originalUrl} from ${req.ip}`)
+        if (settings.debug) console.log(`${(new Date()).toISOString()} debug: incoming query ${JSON.stringify(req.query)}`)
 
         // process received http request
         const request = req.originalUrl.slice(0, device.requestUri.length)
@@ -189,15 +190,18 @@ async function processYealink (account: accountInterface, request: string, query
 
     for (let client of account.tomedoClients)
     {
-        if (query.callerID.toLowerCase() === 'anonymous')
+        const callerID = query.callerID.toLowerCase().match(reCallerId)
+        if (settings.debug && callerID) console.log(`${(new Date()).toISOString()} debug: matched callerID ${callerID[1]}`)
+
+        if (!callerID || callerID[1] === 'anonymous')
         {
             // debugging
-            if (settings.debug) console.log(`${(new Date()).toISOString()} debug: caller is anonymous`)
+            if (settings.debug) console.log(`${(new Date()).toISOString()} debug: caller is anonymous or unknown`)
             continue
         }
         if (account.sipUsername === query.active_user) 
         {
-            const url = `http://${client.ip}:${client.port}/${query.event}/${query.callerID}`
+            const url = `http://${client.ip}:${client.port}/${query.event}/${callerID[1]}`
             // debugging
             if (settings.debug) console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`)
             requests.push(got(url))

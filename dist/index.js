@@ -10,7 +10,7 @@ const fsAppendFile = promisify(fs.appendFile);
 const fsMkdir = promisify(fs.mkdir);
 const fsReadFile = promisify(fs.readFile);
 const fsWriteFile = promisify(fs.writeFile);
-const reCallerId = /[+0-9]{4,}/;
+const reCallerId = /(anonymous|[+]?[0-9]{4,})/;
 let settingsSchema;
 try {
     settingsSchema = JSON.parse(await fsReadFile(__dirname + '/settings.schema', { encoding: 'utf8' }));
@@ -42,6 +42,8 @@ for (let device of settings.devices) {
     app.get(device.requestUri, async (req, res, next) => {
         if (settings.debug)
             console.log(`${(new Date()).toISOString()} debug: incoming request ${req.originalUrl} from ${req.ip}`);
+        if (settings.debug)
+            console.log(`${(new Date()).toISOString()} debug: incoming query ${JSON.stringify(req.query)}`);
         const request = req.originalUrl.slice(0, device.requestUri.length);
         const query = req.query;
         if (device.requestUri === request) {
@@ -89,13 +91,16 @@ async function processSnom(account, request, query) {
 async function processYealink(account, request, query) {
     let requests = [];
     for (let client of account.tomedoClients) {
-        if (query.callerID.toLowerCase() === 'anonymous') {
+        const callerID = query.callerID.toLowerCase().match(reCallerId);
+        if (settings.debug && callerID)
+            console.log(`${(new Date()).toISOString()} debug: matched callerID ${callerID[1]}`);
+        if (!callerID || callerID[1] === 'anonymous') {
             if (settings.debug)
-                console.log(`${(new Date()).toISOString()} debug: caller is anonymous`);
+                console.log(`${(new Date()).toISOString()} debug: caller is anonymous or unknown`);
             continue;
         }
         if (account.sipUsername === query.active_user) {
-            const url = `http://${client.ip}:${client.port}/${query.event}/${query.callerID}`;
+            const url = `http://${client.ip}:${client.port}/${query.event}/${callerID[1]}`;
             if (settings.debug)
                 console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`);
             requests.push(got(url));

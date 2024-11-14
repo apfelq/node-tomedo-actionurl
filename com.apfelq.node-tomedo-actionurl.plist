@@ -14,6 +14,14 @@
     <string>dist/index.js</string>
   </array>
 
+  <key>UserName</key>
+  <string>admin</string>
+
+  <key>StandardOutPath</key>
+  <string>/Users/admin/Documents/node-tomedo-actionurl/app.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/admin/Documents/node-tomedo-actionurl/app.log</string>
+
   <key>Nice</key>
   <integer>1</integer>
 
