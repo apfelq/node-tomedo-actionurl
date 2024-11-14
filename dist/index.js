@@ -97,7 +97,7 @@ async function processYealink(account, request, query) {
     const callerID = findNumbers(query.callerID, { defaultRegionCode: settings.regionCode });
     if (settings.debug)
         console.log(`${(new Date()).toISOString()} debug: matched callerID ${JSON.stringify(callerID[0]) || 'none'}`);
-    if (callerID.length = 0) {
+    if (callerID.length === 0) {
         if (settings.debug)
             console.log(`${(new Date()).toISOString()} debug: caller is anonymous or unknown`);
         return Promise.resolve();
