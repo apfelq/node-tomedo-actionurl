@@ -13,6 +13,8 @@ const fsMkdir = promisify(fs.mkdir)
 const fsReadFile = promisify(fs.readFile)
 const fsWriteFile = promisify(fs.writeFile)
 
+const reCallerId = /[+0-9]{4,}/;
+
 // load settings schema
 let settingsSchema
 try
@@ -187,13 +189,24 @@ async function processYealink (account: accountInterface, request: string, query
 
     for (let client of account.tomedoClients)
     {
-        const url = `http://${client.ip}:${client.port}/${query.event}/${query.callerID}`
-
-        // debugging
-        if (settings.debug) console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`)
-
-        if (query.callerID === 'Anonymous') continue
-        if (account.sipUsername === query.active_user) requests.push(got(url))
+        if (query.callerID.toLowerCase() === 'anonymous')
+        {
+            // debugging
+            if (settings.debug) console.log(`${(new Date()).toISOString()} debug: caller is anonymous`)
+            continue
+        }
+        if (account.sipUsername === query.active_user) 
+        {
+            const url = `http://${client.ip}:${client.port}/${query.event}/${query.callerID}`
+            // debugging
+            if (settings.debug) console.log(`${(new Date()).toISOString()} debug: outgoing request ${url}`)
+            requests.push(got(url))
+        }
+        else
+        {
+            // debugging
+            if (settings.debug) console.log(`${(new Date()).toISOString()} debug: mismatch in sipusername ${account.sipUsername} vs ${query.active_user}`)
+        }
     }
 
     return Promise.all(requests)
