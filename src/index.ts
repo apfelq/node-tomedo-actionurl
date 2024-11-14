@@ -195,18 +195,19 @@ async function processYealink (account: accountInterface, request: string, query
 {
     let requests = []
 
+    const callerID = findNumbers(query.callerID, {defaultRegionCode: settings.regionCode})
+
+    if (settings.debug) console.log(`${(new Date()).toISOString()} debug: matched callerID ${JSON.stringify(callerID[0]) || 'none'}`)
+
+    if (callerID.length = 0)
+    {
+        // debugging
+        if (settings.debug) console.log(`${(new Date()).toISOString()} debug: caller is anonymous or unknown`)
+        return Promise.resolve()
+    }
+
     for (let client of account.tomedoClients)
     {
-        const callerID = findNumbers(query.callerID, {defaultRegionCode: settings.regionCode})
-
-        if (settings.debug) console.log(`${(new Date()).toISOString()} debug: matched callerID ${JSON.stringify(callerID[0]) || 'none'}`)
-
-        if (callerID.length = 0)
-        {
-            // debugging
-            if (settings.debug) console.log(`${(new Date()).toISOString()} debug: caller is anonymous or unknown`)
-            continue
-        }
         if (account.sipUsername === query.active_user) 
         {
             const url = `http://${client.ip}:${client.port}/${query.event}/${callerID[0].phoneNumber.number.e164}`
